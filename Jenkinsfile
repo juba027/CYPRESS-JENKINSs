@@ -3,7 +3,6 @@ pipeline{
         docker{
             image "cypress/browsers:latest"
             args '--entrypoint='
-            
         }
     }
     stages{
