@@ -1,5 +1,9 @@
 pipeline{
-    agent any
+    agent{
+        docker{
+            image "cypress/browsers.lastest"
+        }
+    }
     stages{
         stage('test stage'){
             steps{
