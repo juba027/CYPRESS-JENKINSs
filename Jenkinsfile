@@ -1,26 +1,29 @@
-pipeline{
-    agent{
-        docker{
-            image "cypress/browsers:latest"
-            args '--entrypoint='
-        }
+pipeline {
+  agent {
+    docker {
+      image 'cypress/browsers:latest'   
+      args '--entrypoint='              
+      reuseNode true
     }
-    stages{
-        stage('test stage'){
-            steps{
-                echo 'hello from jenkins file'
-            }
-        }
-        stage('install dependance'){
-            steps{
-                sh 'npm ci'
-            }
-        }
-        stage('test'){
-            steps{
-                sh 'npx cypress run'
-            }
-        }
+  }
+  options { timestamps(); ansiColor('xterm') }
 
+  stages {
+    stage('Checkout'){ steps { checkout scm } }
+
+    stage('Install deps'){
+      steps { sh 'npm ci' }             
     }
+
+    stage('Run Cypress'){
+      steps { sh 'npx cypress run' }
+    }
+  }
+
+  post {
+    always {
+      archiveArtifacts artifacts: 'cypress/**/*', allowEmptyArchive: true
+      junit allowEmptyResults: true, testResults: 'cypress/**/results*.xml'
+    }
+  }
 }
